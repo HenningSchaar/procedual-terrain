@@ -1,18 +1,31 @@
+import processing.sound.*;
+
+FFT fft;
+AudioIn input;
+
+int bands = 256;
+float[] spectrum = new float[bands];
 int cols, rows;
 int scl = 80;
-int mHeight = 300;
-int w = 10000;
-int h = 10000;
+int mHeight = 800;
+int w = 10160;
+int h = 11000;
 float terrain[][];
+float oldterrain[][];
 float fly = 0;
 float noisespacing = 0.1;
 float flymultiplier = 0.1;
 
 void setup() {
-  size(2800, 1800, P3D);
+  size(1920, 1234, P3D);
   cols = w / scl;
   rows = h / scl;
   terrain = new float[cols][rows];
+  oldterrain = new float[cols][rows];
+  input = new AudioIn(this, 0);
+  input.start();
+  fft = new FFT(this, bands);
+  fft.input(input);
   frameRate(60);
 }
 
@@ -22,17 +35,17 @@ void draw() {
   stroke(255);
   translate(width/2, height/2);
   rotateX(PI / 3);
-  translate(-w/2, -h/2-150);
+  translate(-w/2, -h/2-2700);
+  fft.analyze(spectrum);
 
-  float yoffset = fly;
-  for (int y = 0; y < rows; y++) {
-    float xoffset = 0;
+  for (int y = 0; y < rows-1; y++) {
     for (int x= 0; x < cols; x++) {
-      terrain[x][y] = map(noise(xoffset, yoffset), 0, 1, -mHeight, mHeight);
-      xoffset += noisespacing;
+      terrain[x][y] = oldterrain[x][y+1];
+      terrain[x][rows-1] = map((spectrum[x] * (x * 0.1)), -0.5, 0.5, -mHeight, mHeight);
     }
-    yoffset += noisespacing;
   }
+  oldterrain = terrain;
+
   for (int y = 0; y < rows-1; y++) {
     beginShape(TRIANGLE_STRIP);
     for (int x= 0; x < cols; x++) {
