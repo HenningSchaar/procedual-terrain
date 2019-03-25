@@ -1,3 +1,10 @@
+import processing.sound.*;
+
+FFT fft;
+AudioIn input;
+
+int bands = 512;
+float[] spectrum = new float[bands];
 int cols, rows;
 int scl = 80;
 int mHeight = 300;
@@ -13,6 +20,10 @@ void setup() {
   cols = w / scl;
   rows = h / scl;
   terrain = new float[cols][rows];
+  input = new AudioIn(this, 0);
+  input.start();
+  fft = new FFT(this, bands);
+  fft.input(input);
   frameRate(60);
 }
 
@@ -23,6 +34,8 @@ void draw() {
   translate(width/2, height/2);
   rotateX(PI / 3);
   translate(-w/2, -h/2-150);
+  fft.analyze(spectrum);
+
 
   float yoffset = fly;
   for (int y = 0; y < rows; y++) {
