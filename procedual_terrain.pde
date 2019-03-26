@@ -30,18 +30,18 @@ void setup() {
 }
 
 void draw() {
-  background(0);
+  //background(0);
   fill(255, 50);
   stroke(255);
   translate(width/2, height/2);
   rotateX(PI / 3);
-  translate(-w/2, -h/2-2700);
+  translate(-w/2, -h/2-4770);
   fft.analyze(spectrum);
 
   for (int y = 0; y < rows-1; y++) {
     for (int x= 0; x < cols; x++) {
       terrain[x][y] = oldterrain[x][y+1];
-      terrain[x][rows-1] = map((spectrum[x] * (x * 0.1)), -0.5, 0.5, -mHeight, mHeight);
+      terrain[x][rows-1] = map((spectrum[x] * (x * 0.01)), -0.05, 0.05, -mHeight, mHeight);
     }
   }
   oldterrain = terrain;
@@ -49,7 +49,7 @@ void draw() {
   for (int y = 0; y < rows-1; y++) {
     beginShape(TRIANGLE_STRIP);
     for (int x= 0; x < cols; x++) {
-      fill(map(terrain[x][y], -mHeight, mHeight, 0, 255), map(y, 0, rows, 0, 255), map(x, 0, cols, 0, 255));
+      fill(map(terrain[x][y], -mHeight, mHeight, 0, 255), map(y, 0, rows, 0, 255), map(x, 0, cols, 0, 255), 240);
       vertex(x * scl, y * scl, terrain[x][y]);
       vertex(x * scl, (y+1) * scl, terrain[x][y+1]);
     }
